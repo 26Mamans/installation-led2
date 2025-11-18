@@ -30,7 +30,7 @@ def submit():
 
     # Lire ou créer le fichier Excel
     if os.path.exists(EXCEL_FILE):
-        df = pd.read_excel(EXCEL_FILE)
+        df = pd.read_excel(EXCEL_FILE, engine='openpyxl')
         df = pd.concat([df, pd.DataFrame([data])], ignore_index=True)
     else:
         df = pd.DataFrame([data])
@@ -50,9 +50,13 @@ def submit():
         f"Détails: {data['Détails']}"
     )
     try:
-        requests.post(DISCORD_WEBHOOK_URL, json={"content": message})
+        response = requests.post(DISCORD_WEBHOOK_URL, json={"content": message})
+        if response.status_code != 204:  # Discord renvoie 204 si tout va bien
+            print("Erreur Discord:", response.status_code, response.text)
+        else:
+            print("Message Discord envoyé ✅")
     except Exception as e:
-        print("Erreur en envoyant le message Discord:", e)
+        print("Exception Discord:", e)
 
     # Redirection vers la page de confirmation
     return redirect(url_for('thank_you'))
