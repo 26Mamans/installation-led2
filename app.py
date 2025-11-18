@@ -1,53 +1,51 @@
-from flask import Flask, request, send_from_directory
+from flask import Flask, render_template, request
 import pandas as pd
 import os
 
 app = Flask(__name__)
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-EXCEL_FILE = os.path.join(BASE_DIR, "leads.xlsx")
-HTML_FILE = os.path.join(BASE_DIR, "formulaire.html")
+EXCEL_FILE = "data.xlsx"
 
-# Création du fichier Excel s'il n'existe pas
-if not os.path.exists(EXCEL_FILE):
-    df = pd.DataFrame(columns=[
-        "Nom", "Prénom", "Email", "Téléphone", "Code Postal",
-        "Endroit", "Surface (m2)", "Détails"
-    ])
-    df.to_excel(EXCEL_FILE, index=False)
-
-@app.route('/')
+@app.route("/", methods=["GET", "POST"])
 def home():
-    return send_from_directory(BASE_DIR, 'leads.html')
+    if request.method == "POST":
+        # Récupérer toutes les données du formulaire
+        nom = request.form.get("nom")
+        prenom = request.form.get("prenom")
+        email = request.form.get("email")
+        tel = request.form.get("tel")
+        postal = request.form.get("postal")
+        endroit = request.form.get("endroit")
+        surface = request.form.get("surface")
+        details = request.form.get("details")
 
-@app.route('/submit', methods=['POST'])
-def submit():
-    nom = request.form.get("nom")
-    prenom = request.form.get("prenom")
-    email = request.form.get("email")
-    tel = request.form.get("tel")
-    postal = request.form.get("postal")
-    endroit = request.form.get("endroit")
-    surface = request.form.get("surface")
-    details = request.form.get("details")
+        # Créer un dictionnaire avec toutes les données
+        new_row = {
+            "Nom": nom,
+            "Prénom": prenom,
+            "Email": email,
+            "Téléphone": tel,
+            "Code Postal": postal,
+            "Endroit": endroit,
+            "Surface (m2)": surface,
+            "Détails": details
+        }
 
-    df = pd.read_excel(EXCEL_FILE)
+        # Transformer en DataFrame
+        df = pd.DataFrame([new_row])
 
-    new_row = {
-        "Nom": nom,
-        "Prénom": prenom,
-        "Email": email,
-        "Téléphone": tel,
-        "Code Postal": postal,
-        "Endroit": endroit,
-        "Surface (m2)": surface,
-        "Détails": details
-    }
+        # Ajouter au fichier existant si il existe
+        if os.path.exists(EXCEL_FILE):
+            df_existing = pd.read_excel(EXCEL_FILE, engine="openpyxl")
+            df = pd.concat([df_existing, df], ignore_index=True)
 
-    df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
-    df.to_excel(EXCEL_FILE, index=False)
+        # Sauvegarder dans Excel
+        df.to_excel(EXCEL_FILE, index=False, engine="openpyxl")
 
-    return "<h2>Merci ! Nous vous contacterons très vite pour votre installation LED. 💡</h2>"
+        return "Formulaire reçu et sauvegardé ! ✅"
+
+    # GET → afficher le formulaire
+    return render_template("formulaire.html")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=10000, debug=True)
