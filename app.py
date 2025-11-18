@@ -4,7 +4,9 @@ import os
 
 app = Flask(__name__)
 
-EXCEL_FILE = "leads.xlsx"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+EXCEL_FILE = os.path.join(BASE_DIR, "leads.xlsx")
+HTML_FILE = os.path.join(BASE_DIR, "formulaire.html")
 
 # Création du fichier Excel s'il n'existe pas
 if not os.path.exists(EXCEL_FILE):
@@ -16,7 +18,7 @@ if not os.path.exists(EXCEL_FILE):
 
 @app.route('/')
 def home():
-    return send_from_directory('.', 'formulaire.html')
+    return send_from_directory(BASE_DIR, 'leads.html')
 
 @app.route('/submit', methods=['POST'])
 def submit():
