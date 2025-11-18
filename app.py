@@ -4,7 +4,6 @@ import os
 
 app = Flask(__name__)
 
-# Chemin du fichier Excel dans le répertoire courant
 EXCEL_FILE = os.path.join(os.getcwd(), "data.xlsx")
 
 @app.route('/')
@@ -13,44 +12,35 @@ def index():
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    # Récupération des données du formulaire
-    nom = request.form.get('nom')
-    prenom = request.form.get('prenom')
-    email = request.form.get('email')
-    tel = request.form.get('tel')
-    postal = request.form.get('postal')
-    endroit = request.form.get('endroit')
-    surface = request.form.get('surface')
-    details = request.form.get('details')
-
-    # Création de la nouvelle ligne à ajouter
-    new_row = {
-        "Nom": nom,
-        "Prénom": prenom,
-        "Email": email,
-        "Téléphone": tel,
-        "Code Postal": postal,
-        "Endroit": endroit,
-        "Surface (m2)": surface,
-        "Détails": details
+    # Récupérer les données du formulaire
+    data = {
+        "Nom": request.form.get('nom'),
+        "Prénom": request.form.get('prenom'),
+        "Email": request.form.get('email'),
+        "Téléphone": request.form.get('tel'),
+        "Code Postal": request.form.get('postal'),
+        "Endroit": request.form.get('endroit'),
+        "Surface (m2)": request.form.get('surface'),
+        "Détails": request.form.get('details')
     }
 
-    # Vérifie si le fichier existe, sinon crée un nouveau DataFrame
+    # Lire ou créer le fichier Excel
     if os.path.exists(EXCEL_FILE):
         df = pd.read_excel(EXCEL_FILE)
-        df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+        df = pd.concat([df, pd.DataFrame([data])], ignore_index=True)
     else:
-        df = pd.DataFrame([new_row])
+        df = pd.DataFrame([data])
 
-    # Sauvegarde dans Excel
+    # Sauvegarder
     df.to_excel(EXCEL_FILE, index=False, engine='openpyxl')
 
-    # Redirection vers une page "merci"
+    # Redirection vers la page de confirmation
     return redirect(url_for('thank_you'))
 
 @app.route('/thank_you')
 def thank_you():
-    return "<h1>Merci ! Votre demande a bien été envoyée ✅</h1>"
+    return "<h1>Merci ! Votre demande a été envoyée ✅</h1>"
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000, debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
