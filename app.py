@@ -1,10 +1,14 @@
 from flask import Flask, render_template, request, redirect, url_for
 import pandas as pd
 import os
+import requests  # Pour envoyer la notification Discord
 
 app = Flask(__name__)
 
 EXCEL_FILE = os.path.join(os.getcwd(), "data.xlsx")
+
+# Ton webhook Discord
+DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1420723717440540725/PPWGm_2WDVZgxIJQSTek7wJZXBzPyCy1YrDjxWk6uuW0YcATMfqRjb489TwYRatlKnPg"  # Remplace par ton webhook Discord
 
 @app.route('/')
 def index():
@@ -33,6 +37,22 @@ def submit():
 
     # Sauvegarder
     df.to_excel(EXCEL_FILE, index=False, engine='openpyxl')
+
+    # Envoyer une notification sur Discord
+    message = (
+        f"💡 **Nouvelle demande LED !**\n"
+        f"Nom: {data['Nom']} {data['Prénom']}\n"
+        f"Email: {data['Email']}\n"
+        f"Téléphone: {data['Téléphone']}\n"
+        f"Code Postal: {data['Code Postal']}\n"
+        f"Lieu: {data['Endroit']}\n"
+        f"Surface: {data['Surface (m2)']}\n"
+        f"Détails: {data['Détails']}"
+    )
+    try:
+        requests.post(DISCORD_WEBHOOK_URL, json={"content": message})
+    except Exception as e:
+        print("Erreur en envoyant le message Discord:", e)
 
     # Redirection vers la page de confirmation
     return redirect(url_for('thank_you'))
