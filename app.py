@@ -16,7 +16,7 @@ if not os.path.exists(EXCEL_FILE):
 
 @app.route('/')
 def home():
-    return send_from_directory('.', 'leads.html')
+    return send_from_directory('.', 'formulaire.html')
 
 @app.route('/submit', methods=['POST'])
 def submit():
