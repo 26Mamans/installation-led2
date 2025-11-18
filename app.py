@@ -1,14 +1,25 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, request, redirect, url_for, render_template
 import pandas as pd
 import os
-import requests
+import gspread
+from google.oauth2.service_account import Credentials
+import requests  # pour Discord si nécessaire
 
 app = Flask(__name__)
 
-EXCEL_FILE = os.path.join(os.getcwd(), "data.xlsx")
+# --- GOOGLE SHEETS ---
+SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
+creds = Credentials.from_service_account_file("credentials.json", scopes=SCOPES)
+gc = gspread.authorize(creds)
+SHEET = gc.open_by_url(
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vT_SSgZErgKHyjQPtXa0dCep8jEnEYsAKqXqcNePdtlNWLs6mMy9MJbQrKB2Sy0mJCkNac7s6qHlaoS/pubhtml?gid=0"
+).sheet1
 
-# Ton webhook Discord
-DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1420723717440540725/PPWGm_2WDVZgxIJQSTek7wJZXBzPyCy1YrDjxWk6uuW0YcATMfqRjb489TwYRatlKnPg"  # Remplace par ton webhook
+# --- EXCEL LOCAL ---
+EXCEL_PATH = "leads.xlsx"
+if not os.path.exists(EXCEL_PATH):
+    df = pd.DataFrame(columns=["Nom", "Prénom", "Email", "Téléphone", "Code Postal", "Endroit", "Surface (m2)", "Détails"])
+    df.to_excel(EXCEL_PATH, index=False)
 
 @app.route('/')
 def index():
@@ -16,7 +27,6 @@ def index():
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    # Récupérer les données du formulaire
     data = {
         "Nom": request.form.get('nom'),
         "Prénom": request.form.get('prenom'),
@@ -28,49 +38,24 @@ def submit():
         "Détails": request.form.get('details')
     }
 
-    # DEBUG: afficher les données reçues
-    print("===== NOUVELLE DEMANDE REÇUE =====")
-    print(data)
+    # --- SAUVEGARDE EXCEL ---
+    df = pd.read_excel(EXCEL_PATH)
+    df = pd.concat([df, pd.DataFrame([data])], ignore_index=True)
+    df.to_excel(EXCEL_PATH, index=False)
 
-    # Lire ou créer le fichier Excel
-    if os.path.exists(EXCEL_FILE):
-        df = pd.read_excel(EXCEL_FILE)
-        df = pd.concat([df, pd.DataFrame([data])], ignore_index=True)
-    else:
-        df = pd.DataFrame([data])
+    # --- SAUVEGARDE GOOGLE SHEETS ---
+    row = list(data.values())
+    SHEET.append_row(row)
 
-    # Sauvegarder
-    df.to_excel(EXCEL_FILE, index=False, engine='openpyxl')
-    print("✅ Données sauvegardées dans Excel :", EXCEL_FILE)
+    # --- OPTIONNEL : Discord ---
+    # discord_webhook_url = "TON_WEBHOOK"
+    # requests.post(discord_webhook_url, json={"content": f"Nouvelle soumission: {data}"})
 
-    # Envoyer une notification sur Discord
-    message = (
-        f"💡 **Nouvelle demande LED !**\n"
-        f"Nom: {data['Nom']} {data['Prénom']}\n"
-        f"Email: {data['Email']}\n"
-        f"Téléphone: {data['Téléphone']}\n"
-        f"Code Postal: {data['Code Postal']}\n"
-        f"Lieu: {data['Endroit']}\n"
-        f"Surface: {data['Surface (m2)']}\n"
-        f"Détails: {data['Détails']}"
-    )
-
-    try:
-        response = requests.post(DISCORD_WEBHOOK_URL, json={"content": message})
-        print("🔔 Discord status code:", response.status_code)
-        if response.status_code != 204:
-            print("⚠️ Discord webhook response:", response.text)
-    except Exception as e:
-        print("❌ Erreur en envoyant le message Discord:", e)
-
-    # Redirection vers la page de confirmation
-    return redirect(url_for('thank_you'))
+    return redirect(url_for("thank_you"))
 
 @app.route('/thank_you')
 def thank_you():
-    return "<h1>Merci ! Votre demande a été envoyée ✅</h1>"
+    return "<h1>Merci ! Les données ont été enregistrées ✅</h1>"
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 10000))
-    print(f"🚀 Serveur démarré sur le port {port}")
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host="0.0.0.0", port=5000)
