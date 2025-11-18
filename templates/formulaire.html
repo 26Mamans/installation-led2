@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demande d'installation LED</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Poppins, Arial, sans-serif;
+            background: url('https://images.unsplash.com/photo-1527333656061-ca7c74b8ff31?auto=format&fit=crop&w=1200&q=80') no-repeat center center/cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: rgba(255,255,255,0.93);
+            border-radius: 15px;
+            width: 420px;
+            padding: 35px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.22);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(25px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 26px;
+            margin-bottom: 10px;
+            color: #222;
+        }
+
+        p {
+            text-align: center;
+            font-size: 15px;
+            color: #444;
+            margin-bottom: 25px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 14px;
+            margin-top: 12px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+        }
+
+        button {
+            width: 100%;
+            background: linear-gradient(135deg, #4c6ef5, #15aabf);
+            border: none;
+            color: white;
+            font-size: 18px;
+            padding: 14px;
+            margin-top: 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 20px rgba(50, 115, 220, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Installation LED 💡</h1>
+        <p>Remplissez ce formulaire pour recevoir un devis rapide et gratuit.</p>
+
+        <form action="/submit" method="POST">
+
+            <input type="text" name="nom" placeholder="Nom" required>
+            <input type="text" name="prenom" placeholder="Prénom" required>
+            <input type="email" name="email" placeholder="Adresse email" required>
+            <input type="text" name="tel" placeholder="Numéro de téléphone" required>
+            <input type="text" name="postal" placeholder="Code postal" required>
+
+            <select name="endroit" required>
+                <option value="">Lieu d'installation</option>
+                <option>Boutique / magasin</option>
+                <option>Bureau</option>
+                <option>Restaurant</option>
+                <option>Entrepôt</option>
+                <option>Appartement pro</option>
+                <option>Local commercial</option>
+                <option>Autre</option>
+            </select>
+
+            <select name="surface" required>
+                <option value="">Surface en m²</option>
+                <option>400 - 600 m²</option>
+                <option>600 - 1000 m²</option>
+                <option>+ 1000 m²</option>
+            </select>
+
+            <textarea name="details" placeholder="Donnez plus de détails (taille, style, besoins...)" rows="4"></textarea>
+
+            <button type="submit">Envoyer ma demande</button>
+        </form>
+    </div>
+
+</body>
+</html>
