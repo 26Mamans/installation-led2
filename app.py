@@ -47,10 +47,6 @@ def submit():
     row = list(data.values())
     SHEET.append_row(row)
 
-    # --- OPTIONNEL : Discord ---
-    # discord_webhook_url = "TON_WEBHOOK"
-    # requests.post(discord_webhook_url, json={"content": f"Nouvelle soumission: {data}"})
-
     return redirect(url_for("thank_you"))
 
 @app.route('/thank_you')
