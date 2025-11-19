@@ -3,27 +3,41 @@ import pandas as pd
 import os
 import gspread
 from google.oauth2.service_account import Credentials
-import requests  # pour Discord si nécessaire
+import json
+import requests
 
 app = Flask(__name__)
 
-# --- GOOGLE SHEETS ---
+# ---------------- GOOGLE SHEETS ----------------
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
-creds = Credentials.from_service_account_file("credentials.json", scopes=SCOPES)
-gc = gspread.authorize(creds)
-SHEET = gc.open_by_url(
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vT_SSgZErgKHyjQPtXa0dCep8jEnEYsAKqXqcNePdtlNWLs6mMy9MJbQrKB2Sy0mJCkNac7s6qHlaoS/pubhtml?gid=0"
-).sheet1
 
-# --- EXCEL LOCAL ---
+# Credentials depuis variable d'environnement Render
+google_creds_json = os.environ.get("GOOGLE_CREDS")
+if not google_creds_json:
+    raise Exception("Variable d'environnement GOOGLE_CREDS manquante !")
+
+creds_dict = json.loads(google_creds_json)
+creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
+gc = gspread.authorize(creds)
+
+# Google Sheet ID (pas le pubhtml)
+SHEET_ID = "TON_SHEET_ID_ICI"
+sheet = gc.open_by_key(SHEET_ID).sheet1
+
+# ---------------- EXCEL LOCAL ----------------
 EXCEL_PATH = "leads.xlsx"
 if not os.path.exists(EXCEL_PATH):
-    df = pd.DataFrame(columns=["Nom", "Prénom", "Email", "Téléphone", "Code Postal", "Endroit", "Surface (m2)", "Détails"])
+    df = pd.DataFrame(columns=[
+        "Nom", "Prénom", "Email", "Téléphone",
+        "Code Postal", "Endroit", "Surface (m2)", "Détails"
+    ])
     df.to_excel(EXCEL_PATH, index=False)
+
 
 @app.route('/')
 def index():
     return render_template('formulaire.html')
+
 
 @app.route('/submit', methods=['POST'])
 def submit():
@@ -44,18 +58,21 @@ def submit():
     df.to_excel(EXCEL_PATH, index=False)
 
     # --- SAUVEGARDE GOOGLE SHEETS ---
-    row = list(data.values())
-    SHEET.append_row(row)
+    sheet.append_row(list(data.values()))
 
-    # --- OPTIONNEL : Discord ---
-    # discord_webhook_url = "TON_WEBHOOK"
-    # requests.post(discord_webhook_url, json={"content": f"Nouvelle soumission: {data}"})
+    # --- DISCORD (optionnel) ---
+    discord_webhook_url = os.environ.get("DISCORD_WEBHOOK")  # mettre webhook en variable Render
+    if discord_webhook_url:
+        requests.post(discord_webhook_url, json={"content": f"Nouvelle soumission: {data}"})
 
     return redirect(url_for("thank_you"))
+
 
 @app.route('/thank_you')
 def thank_you():
     return "<h1>Merci ! Les données ont été enregistrées ✅</h1>"
 
+
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
