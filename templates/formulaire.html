@@ -1,118 +1,257 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demande d'installation LED</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Installation LED financée – Dispositif CEE</title>
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Poppins, Arial, sans-serif;
-            background: url('https://images.unsplash.com/photo-1527333656061-ca7c74b8ff31?auto=format&fit=crop&w=1200&q=80') no-repeat center center/cover;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 
-        .container {
-            background: rgba(255,255,255,0.93);
-            border-radius: 15px;
-            width: 420px;
-            padding: 35px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.22);
-            animation: fadeIn 0.8s ease-out;
-        }
+<style>
+    body {
+        margin: 0;
+        font-family: "Poppins", sans-serif;
+        background: #f5f6fa;
+        color: #222;
+    }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(25px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    /* LOGOS */
+    .top-logos {
+        width: 100%;
+        padding: 15px 25px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        background: white;
+        border-bottom: 1px solid #ddd;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+    }
+    .top-logos img {
+        height: 45px;
+        opacity: 0;
+        transform: translateY(-10px);
+    }
 
-        h1 {
-            text-align: center;
-            font-size: 26px;
-            margin-bottom: 10px;
-            color: #222;
-        }
+    /* HERO */
+    .hero {
+        width: 100%;
+        height: 450px;
+        background: url('https://images.unsplash.com/photo-1516387938699-a93567ec168e?q=80&w=1200') center/cover;
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding-left: 80px;
+    }
 
-        p {
-            text-align: center;
-            font-size: 15px;
-            color: #444;
-            margin-bottom: 25px;
-        }
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0.45);
+    }
 
-        input, textarea, select {
-            width: 100%;
-            padding: 14px;
-            margin-top: 12px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            font-size: 15px;
-        }
+    .hero-content {
+        position: relative;
+        color: white;
+        max-width: 600px;
+        opacity: 0;
+        transform: translateX(-40px);
+    }
 
-        button {
-            width: 100%;
-            background: linear-gradient(135deg, #4c6ef5, #15aabf);
-            border: none;
-            color: white;
-            font-size: 18px;
-            padding: 14px;
-            margin-top: 25px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: 0.3s;
-            font-weight: bold;
-        }
+    .hero h1 {
+        font-size: 40px;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+    .hero p {
+        font-size: 18px;
+        opacity: 0.9;
+    }
 
-        button:hover {
-            transform: scale(1.03);
-            box-shadow: 0 10px 20px rgba(50, 115, 220, 0.4);
-        }
-    </style>
+    /* SECTIONS */
+    .section {
+        padding: 70px 12%;
+        background: white;
+    }
+
+    .section h2 {
+        font-size: 32px;
+        margin-bottom: 20px;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .benefits {
+        display: flex;
+        justify-content: center;
+        gap: 35px;
+        margin-top: 40px;
+    }
+
+    .benefit-box {
+        background: #f8f9fc;
+        padding: 25px;
+        width: 260px;
+        border-radius: 12px;
+        text-align: center;
+        opacity: 0;
+        transform: translateY(20px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.06);
+        transition: 0.3s;
+    }
+
+    .benefit-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 18px 35px rgba(0,0,0,0.09);
+    }
+
+    .benefit-box img {
+        height: 55px;
+        margin-bottom: 15px;
+    }
+
+    /* FORMULAIRE */
+    .form-section {
+        background: #eef2ff;
+        padding: 80px 12%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .form-box {
+        width: 420px;
+        padding: 35px;
+        background: white;
+        border-radius: 18px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    .form-box h3 {
+        font-size: 24px;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 14px;
+        margin-top: 12px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        font-size: 15px;
+    }
+
+    button {
+        width: 100%;
+        padding: 15px;
+        margin-top: 22px;
+        background: linear-gradient(135deg, #3b82f6, #0ea5e9);
+        border: none;
+        color: white;
+        font-size: 18px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0,150,255,0.4);
+    }
+</style>
 </head>
 
 <body>
 
-    <div class="container">
+<!-- LOGOS -->
+<div class="top-logos">
+    <img id="logo1" src="https://cdn.discordapp.com/attachments/1341555858752147607/1440757836568203307/IMG_7776.jpg?ex=691f51cc&is=691e004c&hm=673395b16c2d405691b780d368d63a5ef51699f24b21fb1b72d0a085cc16305f&">
+    <img id="logo2" src="https://cdn.discordapp.com/attachments/1341555858752147607/1440757836823924788/IMG_7775.jpg?ex=691f51cc&is=691e004c&hm=33beb6d8e3206796ca9b9ce42270dce718927c67010d2805ad9e98f3e794052d&">
+</div>
 
-        <h1>Installation LED 💡</h1>
-        <p>Remplissez ce formulaire pour recevoir un devis rapide et gratuit.</p>
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+        <h1>Modernisez votre éclairage professionnel</h1>
+        <p>Remplacez l’éclairage de votre bâtiment par des LED financées jusqu’à 100% grâce au dispositif CEE.</p>
+    </div>
+</div>
+
+<!-- SECTION EXPLICATION -->
+<div class="section">
+    <h2>Pourquoi passer aux LED avec le dispositif CEE ?</h2>
+
+    <div class="benefits">
+        <div class="benefit-box">
+            <img src="https://cdn-icons-png.flaticon.com/512/1040/1040257.png">
+            <h3>Économies immédiates</h3>
+            <p>Jusqu'à -70% sur votre facture d'électricité.</p>
+        </div>
+
+        <div class="benefit-box">
+            <img src="https://cdn-icons-png.flaticon.com/512/1828/1828817.png">
+            <h3>Financement CEE</h3>
+            <p>Prise en charge jusqu'à 100% selon votre dossier.</p>
+        </div>
+
+        <div class="benefit-box">
+            <img src="https://cdn-icons-png.flaticon.com/512/833/833472.png">
+            <h3>Installation rapide</h3>
+            <p>Votre éclairage remplacé en seulement 24 à 48h.</p>
+        </div>
+    </div>
+</div>
+
+<!-- FORMULAIRE -->
+<div class="form-section">
+    <div class="form-box" id="formBox">
+        <h3>Vérifier mon éligibilité CEE</h3>
 
         <form action="/submit" method="POST">
-
             <input type="text" name="nom" placeholder="Nom" required>
             <input type="text" name="prenom" placeholder="Prénom" required>
-            <input type="email" name="email" placeholder="Adresse email" required>
-            <input type="text" name="tel" placeholder="Numéro de téléphone" required>
-            <input type="text" name="postal" placeholder="Code postal" required>
-
-            <select name="endroit" required>
-                <option value="">Lieu d'installation</option>
-                <option>Boutique / magasin</option>
-                <option>Bureau</option>
-                <option>Restaurant</option>
-                <option>Entrepôt</option>
-                <option>Appartement pro</option>
-                <option>Local commercial</option>
-                <option>Autre</option>
-            </select>
+            <input type="email" name="email" placeholder="Email professionnel" required>
+            <input type="text" name="tel" placeholder="Téléphone" required>
 
             <select name="surface" required>
-                <option value="">Surface en m²</option>
+                <option value="">Surface du bâtiment</option>
                 <option>400 - 600 m²</option>
                 <option>600 - 1000 m²</option>
                 <option>+ 1000 m²</option>
             </select>
 
-            <textarea name="details" placeholder="Donnez plus de détails (taille, style, besoins...)" rows="4"></textarea>
-
-            <button type="submit">Envoyer ma demande</button>
+            <button>Valider mon éligibilité</button>
         </form>
     </div>
+</div>
+
+<script>
+    gsap.to("#logo1", {opacity: 1, y: 0, duration: 0.7});
+    gsap.to("#logo2", {opacity: 1, y: 0, duration: 0.7, delay: 0.15});
+
+    gsap.to(".hero-content", {opacity: 1, x: 0, duration: 1, ease: "power3.out"});
+
+    gsap.to(".benefit-box", {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        stagger: 0.2,
+        delay: 0.2
+    });
+
+    gsap.to("#formBox", {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        delay: 0.3,
+        ease: "power3.out"
+    });
+</script>
 
 </body>
 </html>
