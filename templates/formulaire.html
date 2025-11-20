@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
 <title>Installation LED financée – Dispositif CEE</title>
 
 <!-- GSAP -->
@@ -16,13 +17,19 @@
         color: #222;
     }
 
+    /* Empêche le zoom automatique iPhone */
+    input, select, textarea, button {
+        font-size: 16px !important;
+        -webkit-text-size-adjust: 100%;
+    }
+
     /* LOGOS */
     .top-logos {
         width: 100%;
-        padding: 15px 25px;
+        padding: 12px 18px;
         display: flex;
         justify-content: flex-end;
-        gap: 12px;
+        gap: 10px;
         background: white;
         border-bottom: 1px solid #ddd;
         position: sticky;
@@ -30,7 +37,7 @@
         z-index: 20;
     }
     .top-logos img {
-        height: 45px;
+        height: 40px;
         opacity: 0;
         transform: translateY(-10px);
     }
@@ -38,12 +45,12 @@
     /* HERO */
     .hero {
         width: 100%;
-        height: 450px;
+        height: 400px;
         background: url('https://images.unsplash.com/photo-1516387938699-a93567ec168e?q=80&w=1200') center/cover;
         position: relative;
         display: flex;
         align-items: center;
-        padding-left: 80px;
+        padding-left: 30px;
     }
 
     .hero-overlay {
@@ -55,29 +62,29 @@
     .hero-content {
         position: relative;
         color: white;
-        max-width: 600px;
+        max-width: 500px;
         opacity: 0;
         transform: translateX(-40px);
     }
 
     .hero h1 {
-        font-size: 40px;
+        font-size: 32px;
         margin-bottom: 10px;
         font-weight: 700;
     }
     .hero p {
-        font-size: 18px;
+        font-size: 16px;
         opacity: 0.9;
     }
 
-    /* SECTIONS */
+    /* SECTION EXPLICATION */
     .section {
-        padding: 70px 12%;
+        padding: 60px 10%;
         background: white;
     }
 
     .section h2 {
-        font-size: 32px;
+        font-size: 28px;
         margin-bottom: 20px;
         font-weight: 700;
         text-align: center;
@@ -86,14 +93,15 @@
     .benefits {
         display: flex;
         justify-content: center;
-        gap: 35px;
+        gap: 25px;
+        flex-wrap: wrap;
         margin-top: 40px;
     }
 
     .benefit-box {
         background: #f8f9fc;
-        padding: 25px;
-        width: 260px;
+        padding: 20px;
+        width: 240px;
         border-radius: 12px;
         text-align: center;
         opacity: 0;
@@ -102,27 +110,23 @@
         transition: 0.3s;
     }
 
-    .benefit-box:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 18px 35px rgba(0,0,0,0.09);
-    }
-
     .benefit-box img {
-        height: 55px;
+        height: 50px;
         margin-bottom: 15px;
     }
 
     /* FORMULAIRE */
     .form-section {
         background: #eef2ff;
-        padding: 80px 12%;
+        padding: 60px 10%;
         display: flex;
         justify-content: center;
     }
 
     .form-box {
-        width: 420px;
-        padding: 35px;
+        width: 100%;
+        max-width: 420px;
+        padding: 30px;
         background: white;
         border-radius: 18px;
         box-shadow: 0 20px 40px rgba(0,0,0,0.15);
@@ -131,7 +135,7 @@
     }
 
     .form-box h3 {
-        font-size: 24px;
+        font-size: 22px;
         margin-bottom: 10px;
         text-align: center;
     }
@@ -139,16 +143,16 @@
     input, select {
         width: 100%;
         padding: 14px;
-        margin-top: 12px;
+        margin-top: 14px;
         border-radius: 10px;
         border: 1px solid #ccc;
-        font-size: 15px;
+        font-size: 16px !important;
     }
 
     button {
         width: 100%;
         padding: 15px;
-        margin-top: 22px;
+        margin-top: 25px;
         background: linear-gradient(135deg, #3b82f6, #0ea5e9);
         border: none;
         color: white;
@@ -157,6 +161,7 @@
         cursor: pointer;
         transition: 0.3s;
     }
+
     button:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 25px rgba(0,150,255,0.4);
@@ -168,8 +173,8 @@
 
 <!-- LOGOS -->
 <div class="top-logos">
-    <img id="logo1" src="https://cdn.discordapp.com/attachments/1341555858752147607/1440757836568203307/IMG_7776.jpg?ex=691f51cc&is=691e004c&hm=673395b16c2d405691b780d368d63a5ef51699f24b21fb1b72d0a085cc16305f&">
-    <img id="logo2" src="https://cdn.discordapp.com/attachments/1341555858752147607/1440757836823924788/IMG_7775.jpg?ex=691f51cc&is=691e004c&hm=33beb6d8e3206796ca9b9ce42270dce718927c67010d2805ad9e98f3e794052d&">
+    <img id="logo1" src="https://cdn.discordapp.com/attachments/1341555858752147607/1440757836568203307/IMG_7776.jpg">
+    <img id="logo2" src="https://cdn.discordapp.com/attachments/1341555858752147607/1440757836823924788/IMG_7775.jpg">
 </div>
 
 <!-- HERO -->
@@ -216,7 +221,7 @@
             <input type="text" name="nom" placeholder="Nom" required>
             <input type="text" name="prenom" placeholder="Prénom" required>
             <input type="email" name="email" placeholder="Email professionnel" required>
-            <input type="text" name="tel" placeholder="Téléphone" required>
+            <input type="tel" name="tel" placeholder="Téléphone" required>
 
             <select name="surface" required>
                 <option value="">Surface du bâtiment</option>
@@ -233,24 +238,9 @@
 <script>
     gsap.to("#logo1", {opacity: 1, y: 0, duration: 0.7});
     gsap.to("#logo2", {opacity: 1, y: 0, duration: 0.7, delay: 0.15});
-
     gsap.to(".hero-content", {opacity: 1, x: 0, duration: 1, ease: "power3.out"});
-
-    gsap.to(".benefit-box", {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        stagger: 0.2,
-        delay: 0.2
-    });
-
-    gsap.to("#formBox", {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        delay: 0.3,
-        ease: "power3.out"
-    });
+    gsap.to(".benefit-box", {opacity: 1, y: 0, duration: 1, stagger: 0.2, delay: 0.2});
+    gsap.to("#formBox", {opacity: 1, y: 0, duration: 1, delay: 0.3, ease: "power3.out"});
 </script>
 
 </body>
